@@ -1,5 +1,5 @@
 # Creates an Ambari Server base on vanilla centos
-FROM sequenceiq/dnsmasq:pam-fix
+FROM sequenceiq/dnsmasq
 MAINTAINER SequenceIQ
 
 ADD hdp.repo /etc/yum.repos.d/
@@ -32,6 +32,19 @@ WORKDIR /tmp
 
 # fixing pgsql issue
 RUN rm -rf /tmp/.s.PGSQL.5432.*
+
+#Logstash forwarder setup
+RUN cd /tmp && curl -O http://packages.elasticsearch.org/logstashforwarder/centos/logstash-forwarder-0.3.1-1.x86_64.rpm && rpm -ivh /tmp/logstash-forwarder-0.3.1-1.x86_64.rpm
+
+#Add custom init
+ADD logstash-client/init/10_init-logstash.sh /usr/local/init/10_init-logstash.sh
+
+#Insecure cert
+ADD logstash-client/tls /etc/pki/tls
+
+#Add config
+ADD logstash-client/logstash-forwarder.template /etc/logstash-forwarder
+
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/serf/bin/start-serf-agent.sh"]
