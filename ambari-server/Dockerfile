@@ -38,11 +38,11 @@ ADD internal-hostname.sh /etc/ambari-agent/conf/internal-hostname.sh
 RUN sed -i "/\[agent\]/ a public_hostname_script=\/etc\/ambari-agent\/conf\/public-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
 RUN sed -i "/\[agent\]/ a hostname_script=\/etc\/ambari-agent\/conf\/internal-hostname.sh" /etc/ambari-agent/conf/ambari-agent.ini
 
-RUN mkdir /var/log/hadoop-yarn/metrics && chmod 775 /var/log/hadoop-yarn/metrics && chown yarn:hadoop /var/log/hadoop-yarn/metrics
+RUN mkdir /var/log/hadoop-metrics && chmod 777 /var/log/hadoop-metrics
 ADD hadoop-metrics2.properties.j2 /var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2
 
 # Error: database disk image is malformed
-ADD 00_dbclean.sh /usr/local/init/00_dbclean.sh
+#ADD 00_dbclean.sh /usr/local/init/00_dbclean.sh
 
 VOLUME /var/log
 
