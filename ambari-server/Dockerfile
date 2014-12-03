@@ -19,6 +19,7 @@ COPY wait-for-host-number.sh /tmp/
 COPY ambari-shell.sh /tmp/
 ENV JAVA_HOME /usr/jdk64/jdk1.7.0_45
 ENV PATH $PATH:$JAVA_HOME/bin
+ENV PLUGIN_PATH /plugins
 WORKDIR /tmp
 
 # fixing pgsql issue
@@ -49,6 +50,18 @@ RUN yum install -y openssh-server openssh-clients \
 
 COPY start-agent /start-agent
 COPY start-server /start-server
+
+# download consul, plugn and jq binaries
+RUN curl -Lko /tmp/consul.zip https://dl.bintray.com/mitchellh/consul/0.4.1_linux_amd64.zip && unzip -d /bin /tmp/consul.zip && rm /tmp/consul.zip
+RUN curl -Lk https://s3-eu-west-1.amazonaws.com/sequenceiq/plugn.tar.gz | tar -zxv -C /bin
+RUN curl -o /usr/bin/jq http://stedolan.github.io/jq/download/linux64/jq && chmod +x /usr/bin/jq
+
+# initialize a new plugn path and install default plugins
+RUN plugn init
+RUN plugn install https://github.com/sequenceiq/consul-plugins-install.git install
+RUN plugn enable install
+
+COPY consul-event-handler.sh /consul-event-handler.sh
 
 VOLUME /var/log
 
