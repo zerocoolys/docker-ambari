@@ -26,7 +26,7 @@ cat > $EVENT_LOG
 # if I am server and I am listed in the member-join event: start server
 if [[ "member-join" == "$SERF_EVENT" ]] && grep "$SERF_SELF_NAME" $EVENT_LOG &> /dev/null ; then
   if [[ "$SERF_TAG_AMBARI_SERVER" == "true" ]] ;then
-    run-command-unless-dry-run ambari-server start
+    run-command-unless-dry-run ambari-server start --debug
   fi
 fi
 
